@@ -1,75 +1,72 @@
-# PROJECT_NAME
+# ghd-test
 
-> Template note: replace every `ALL_CAPS` placeholder in this file before publishing or sharing the repository.
-
-`PROJECT_NAME` is `PROJECT_SUMMARY`.
-It is intended for `PRIMARY_USE_CASE` and is maintained by `AUTHOR_NAME` or `ORGANIZATION_NAME`.
-
-## Quick Start
-
-Replace this section with the shortest working path for a new user.
-
-### Prerequisites
-
-- `REPLACE_ME_RUNTIME_OR_LANGUAGE`
-- `REPLACE_ME_REQUIRED_TOOLING`
-- `REPLACE_ME_EXTERNAL_DEPENDENCIES`
-
-### Install
-
-```sh
-REPLACE_ME_INSTALL_COMMAND
-```
-
-### Run
-
-```sh
-REPLACE_ME_START_COMMAND
-```
+`ghd-test` is a small Go CLI used as a release fixture for
+[GitHub Downloader](https://github.com/meigma/ghd). It exists so `ghd` can run
+functional tests against real GitHub releases, release assets, immutable release
+attestations, and GitHub artifact attestations.
 
 ## Usage
 
-Replace this section with the most common workflow for the repository.
-
 ```sh
-REPLACE_ME_PRIMARY_COMMAND_OR_ENTRYPOINT
+go run ./cmd/ghd-test
+go run ./cmd/ghd-test version
 ```
 
-Expected result:
+Expected output:
 
-- `REPLACE_ME_EXPECTED_OUTPUT_OR_BEHAVIOR`
+```text
+hello from ghd-test
+```
 
-## Configuration
+Release binaries print linker-injected version metadata:
 
-Document the minimum configuration needed to use the project.
+```text
+ghd-test v0.1.0 (<commit>) built <date>
+```
 
-- `REPLACE_ME_ENV_VAR_NAME`: `REPLACE_ME_ENV_VAR_DESCRIPTION`
-- `REPLACE_ME_CONFIG_FILE`: `REPLACE_ME_CONFIG_FILE_PURPOSE`
+## `ghd` Fixture Contract
 
-## Documentation
+The root `ghd.toml` describes one package named `ghd-test`. The package uses
+`v${version}` tags, GoReleaser archive assets, and the release workflow
+identity `meigma/ghd-test/.github/workflows/release.yml` for provenance
+verification.
 
-- Main docs: `REPLACE_ME_DOCS_URL_OR_PATH`
-- Examples: `REPLACE_ME_EXAMPLES_URL_OR_PATH`
-- Architecture notes: `REPLACE_ME_ARCHITECTURE_DOC_URL_OR_PATH`
+The release pipeline is intentionally simple:
 
-## Support
+1. Release Please opens and maintains the release PR.
+2. Merging the release PR creates a tag and draft GitHub release.
+3. The tag-triggered Release workflow builds GoReleaser archives, signs
+   `checksums.txt`, generates SBOMs, creates GitHub artifact attestations, and
+   publishes the draft release.
 
-Use `REPLACE_ME_SUPPORT_CHANNEL` for questions and general support.
-Use `REPLACE_ME_BUG_REPORT_CHANNEL` for non-security bug reports.
-Do not report vulnerabilities in public channels. See [SECURITY.md](SECURITY.md).
+## Local Development
 
-## Contributing
+```sh
+go test ./...
+go build ./cmd/ghd-test
+goreleaser check
+goreleaser release --snapshot --clean --skip=sign,sbom
+```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines, local setup expectations, and pull request workflow.
+The release workflow installs Syft and uses GitHub OIDC for keyless Cosign
+signing. Local snapshot builds may need `--skip=sign,sbom` unless the same
+tools and identity flow are available on the developer machine.
+
+## Release Verification
+
+After a release is published:
+
+```sh
+gh release verify v0.1.0 -R meigma/ghd-test
+gh release verify-asset v0.1.0 ./ghd-test_0.1.0_linux_amd64.tar.gz -R meigma/ghd-test
+gh attestation verify ./ghd-test_0.1.0_linux_amd64.tar.gz \
+  --repo meigma/ghd-test \
+  --signer-workflow meigma/ghd-test/.github/workflows/release.yml \
+  --source-ref refs/tags/v0.1.0 \
+  --deny-self-hosted-runners
+```
 
 ## Security
 
-See [SECURITY.md](SECURITY.md) for supported versions and the private vulnerability reporting path.
-
-## License
-
-Replace this section with the actual license name and add the corresponding `LICENSE` file to the repository.
-
-Example:
-
-`PROJECT_NAME` is licensed under the `REPLACE_ME_LICENSE_NAME`.
+Do not report vulnerabilities in public issues or discussions. See
+[SECURITY.md](SECURITY.md).

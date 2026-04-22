@@ -1,16 +1,17 @@
 ---
-title: PROJECT_NAME Docs
+title: ghd-test Docs
 slug: /
-description: Starting point for PROJECT_NAME documentation.
+description: Release fixture notes for ghd-test.
 ---
 
-# PROJECT_NAME Docs
+# ghd-test Docs
 
-This site is the starting point for `PROJECT_NAME` documentation.
+`ghd-test` is a deliberately small Go CLI used to exercise GitHub Downloader
+functional tests against real GitHub releases.
 
-Replace this page with:
+The repository publishes:
 
-- `PROJECT_SUMMARY`
-- `QUICKSTART_STEPS`
-- `GUIDES_AND_REFERENCE_LINKS`
-- `SUPPORT_AND_CONTACT_PATHS`
+- versioned GitHub releases;
+- GoReleaser-built Darwin and Linux archives;
+- GitHub artifact attestations for release assets;
+- a root `ghd.toml` package manifest.
