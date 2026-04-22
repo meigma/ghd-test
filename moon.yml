@@ -1,30 +1,31 @@
-layer: 'scaffolding'
+layer: 'application'
 
 project:
-  title: 'Repository template'
-  description: 'Workspace-level configuration, shared automation, and template defaults.'
-  owner: 'REPLACE_ME_OWNER'
+  title: 'ghd-test'
+  description: 'Hello-world Go CLI fixture for GitHub Downloader release verification tests.'
+  owner: 'meigma'
   maintainers:
-    - 'REPLACE_ME_MAINTAINER'
+    - 'meigma'
 
 workspace:
   inheritedTasks:
     include: []
 
-# Add repository-wide maintenance tasks here as the template grows.
-# Examples:
-#
-# tasks:
-#   format:
-#     command: 'prettier --check .'
-#     toolchains: ['javascript', 'node', 'npm']
-#     inputs: []
-#     options:
-#       cache: false
-#
-#   docs-build:
-#     command: 'moon run docs:build'
-#     toolchains: 'system'
-#     inputs: []
-#     options:
-#       cache: false
+tasks:
+  test:
+    command: 'go test ./...'
+    toolchains: ['go']
+    inputs:
+      - 'go.mod'
+      - 'cmd/**/*.go'
+    options:
+      cache: false
+
+  build:
+    command: 'go build ./cmd/ghd-test'
+    toolchains: ['go']
+    inputs:
+      - 'go.mod'
+      - 'cmd/**/*.go'
+    options:
+      cache: false

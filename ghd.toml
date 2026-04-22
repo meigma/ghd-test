@@ -1,0 +1,32 @@
+version = 1
+
+[provenance]
+signer_workflow = "meigma/ghd-test/.github/workflows/release.yml"
+
+[[packages]]
+name = "ghd-test"
+description = "Small hello-world CLI fixture for ghd functional tests."
+tag_pattern = "v${version}"
+
+[[packages.assets]]
+os = "darwin"
+arch = "amd64"
+pattern = "ghd-test_${version}_darwin_amd64.tar.gz"
+
+[[packages.assets]]
+os = "darwin"
+arch = "arm64"
+pattern = "ghd-test_${version}_darwin_arm64.tar.gz"
+
+[[packages.assets]]
+os = "linux"
+arch = "amd64"
+pattern = "ghd-test_${version}_linux_amd64.tar.gz"
+
+[[packages.assets]]
+os = "linux"
+arch = "arm64"
+pattern = "ghd-test_${version}_linux_arm64.tar.gz"
+
+[[packages.binaries]]
+path = "ghd-test"

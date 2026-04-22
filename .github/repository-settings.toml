@@ -88,7 +88,7 @@ block_force_pushes = true
 
 bypass = [
   { type = "repository_admin_role", mode = "always" },
-  # { type = "app", slug = "meigma-release-please", mode = "always" },
+  { type = "app", slug = "meigma-release-please", mode = "always" },
 ]
 
 [rulesets.tags_default.status_checks]
@@ -114,3 +114,9 @@ dependabot_version_updates = false
 code_quality_preview = true
 commit_comments_on_individual_commits = true
 pull_request_creation_permissions = "all_users"
+
+# Actions workflow permissions are required for release-please to open and update
+# release PRs. Configure in GitHub repository settings if this script reports it
+# as unsupported by the public REST surface.
+actions_default_workflow_permissions = "read"
+actions_can_approve_pull_request_reviews = true

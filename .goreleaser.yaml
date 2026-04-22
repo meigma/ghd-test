@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
+project_name: ghd-test
+
+gomod:
+  proxy: true
+  env:
+    - GOPROXY=https://proxy.golang.org,direct
+    - GOSUMDB=sum.golang.org
+
+before:
+  hooks:
+    - go test ./...
+
+builds:
+  - id: ghd-test
+    main: ./cmd/ghd-test
+    binary: ghd-test
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -buildid=
+      - -X main.version={{ if .IsSnapshot }}{{ .Version }}{{ else }}{{ .Tag }}{{ end }}
+      - -X main.commit={{ .FullCommit }}
+      - -X main.date={{ .Date }}
+
+archives:
+  - id: ghd-test
+    ids:
+      - ghd-test
+    formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - SECURITY.md
+      - ghd.toml
+
+checksum:
+  name_template: checksums.txt
+
+sboms:
+  - artifacts: archive
+
+signs:
+  - cmd: cosign
+    signature: "${artifact}.sigstore.json"
+    args:
+      - sign-blob
+      - "--bundle=${signature}"
+      - "${artifact}"
+      - "--yes"
+    artifacts: checksum
+
+snapshot:
+  version_template: "{{ .Tag }}-dev"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"
+      - "Merge pull request"
+      - "Merge branch"
+
+release:
+  draft: true
+  prerelease: auto
+  use_existing_draft: true
+  replace_existing_artifacts: true
+  mode: keep-existing
+  header: |
+    ## ghd-test {{ .Tag }}
+
+    `ghd-test` is a fixture release for GitHub Downloader functional tests.
+  footer: |
+    ## Verification
+
+    ```bash
+    gh release verify {{ .Tag }} -R meigma/ghd-test
+    gh release verify-asset {{ .Tag }} ./ghd-test_{{ .Version }}_linux_amd64.tar.gz -R meigma/ghd-test
+    gh attestation verify ./ghd-test_{{ .Version }}_linux_amd64.tar.gz \
+      --repo meigma/ghd-test \
+      --signer-workflow meigma/ghd-test/.github/workflows/release.yml \
+      --source-ref refs/tags/{{ .Tag }} \
+      --deny-self-hosted-runners
+    ```

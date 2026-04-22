@@ -1,4 +1,5 @@
 # Moon
+.wt/
 .moon/cache/
 .moon/docker/
 
@@ -8,6 +9,7 @@
 .envrc
 
 # Go
+/ghd-test
 bin/
 cover.out
 coverage.out
