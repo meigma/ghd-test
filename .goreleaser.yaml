@@ -34,6 +34,13 @@ builds:
       - -X main.date={{ .Date }}
 
 archives:
+  - id: ghd-test-binary
+    ids:
+      - ghd-test
+    formats:
+      - binary
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
   - id: ghd-test
     ids:
       - ghd-test
