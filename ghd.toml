@@ -1,7 +1,7 @@
 version = 1
 
 [provenance]
-signer_workflow = "meigma/ghd-test/.github/workflows/release.yml"
+signer_workflow = "meigma/ghd-test/.github/workflows/release-rotated.yml"
 
 [[packages]]
 name = "ghd-test"

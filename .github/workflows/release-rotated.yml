@@ -1,10 +1,8 @@
-name: Release
+name: Release Rotated
 
 on:
   push:
     tags:
-      - "v*"
-    tags-ignore:
       - "v1.1.2"
       - "v1.1.3-*"
 
